@@ -1,0 +1,93 @@
+<html>
+<link href="/css/style.css" rel="stylesheet" type="text/css">
+
+<body>
+	<form ref='uploadForm' id='uploadForm' action='/upload' method='post' encType="multipart/form-data">
+		<div>
+			<label id="filesLabel" for="files" class="btn">Select Image</label>
+			<input id="files" style="display:none;" type="file" name="sampleFile" accept="image/*">
+		</div>
+		<input type='submit' value='Upload!' />
+	</form>
+	<div id="imagesHolder">
+	</div>
+</body>
+
+<script>
+	var imagesHolder = document.getElementById('imagesHolder');
+	var filesElement = document.getElementById('files');
+	var filesLabelElement = document.getElementById('filesLabel');
+	function onFileSelected() {
+		console.log("changed");
+		filename = filesElement.files.item(0).name;
+		console.log(filename);
+		filesLabelElement.innerText = "selected file: " + filename;
+	}
+	filesElement.onchange = onFileSelected;
+
+	function onDeleteImage(imageToDelete) {
+		return function() {
+			console.log("image to delete: " + imageToDelete);
+			window.location = '/delete/' + imageToDelete;
+		}
+	}
+
+	var request;
+	if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+		request = new XMLHttpRequest();
+	} else if (window.ActiveXObject) { // IE
+		try {
+			request = new ActiveXObject('Msxml2.XMLHTTP');
+		}
+		catch (e) {
+			try {
+				request = new ActiveXObject('Microsoft.XMLHTTP');
+			}
+			catch (e) { }
+		}
+	}
+	request.responseType = 'json';
+	request.open('GET', '/images', true);
+	request.onload = function () {
+		var images = request.response;
+		console.log(images);
+		if (images !== undefined && images.length !== undefined && images.length > 0) {
+			var n = images.length;
+			for (i = 0; i < n; i++) {
+				var imgHolder = document.createElement('div');
+				imgHolder.style.position = 'relative';
+				var deleteImageButton = document.createElement('button');
+				deleteImageButton.innerText = 'delete';
+				deleteImageButton.style.position = 'absolute';
+				deleteImageButton.style.left = '0px';
+				deleteImageButton.style.bottom = '0px';
+				deleteImageButton.onclick = onDeleteImage(images[i]);
+				var oImg = document.createElement("img");
+				oImg.setAttribute('src', '/uploads/' + images[i]);
+				oImg.setAttribute('alt', images[i]);
+				oImg.style.maxWidth = '100%';
+				// oImg.setAttribute('max-width', '100%');
+				// oImg.setAttribute('width', '1px');
+				// document.body.appendChild(oImg);
+				imgHolder.appendChild(deleteImageButton);
+				imgHolder.appendChild(oImg);
+				imagesHolder.appendChild(imgHolder);
+				oImg.onload = function() {
+					console.log(this.naturalWidth);
+					console.log(this.naturalHeight);
+					var infoSpan = document.createElement('span');
+					infoSpan.innerText = 'Original size: ' + this.naturalWidth + ' x ' + this.naturalHeight;
+					infoSpan.style.position = 'absolute';
+					infoSpan.style.left = '0px';
+					infoSpan.style.top = '0px';
+					infoSpan.style.color = 'red';
+					this.parentElement.appendChild(infoSpan);
+				}
+			}
+		}
+	};
+	request.send(null);
+
+</script>
+
+</html>

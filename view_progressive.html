@@ -1,0 +1,45 @@
+<html>
+<link href="/progressive-image/index.css" rel="stylesheet" type="text/css">
+
+<main id="app">
+</main>
+
+<script>
+  var imagesHolder = document.getElementById('app');
+
+  var request;
+  if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+    request = new XMLHttpRequest();
+  } else if (window.ActiveXObject) { // IE
+    try {
+      request = new ActiveXObject('Msxml2.XMLHTTP');
+    }
+    catch (e) {
+      try {
+        request = new ActiveXObject('Microsoft.XMLHTTP');
+      }
+      catch (e) { }
+    }
+  }
+  request.responseType = 'json';
+  request.open('GET', '/images', true);
+  request.onload = function () {
+    var images = request.response;
+    console.log(images);
+    if (images !== undefined && images.length !== undefined && images.length > 0) {
+      var n = images.length;
+      for (i = 0; i < n; i++) {
+        var imgHolder = document.createElement('div');
+        imgHolder.setAttribute('class', 'progressive');
+        var oImg = document.createElement("img");
+        oImg.setAttribute('src', '/progressive/' + images[i] + '.jpeg');
+        oImg.setAttribute('alt', images[i]);
+        imgHolder.appendChild(oImg);
+        imagesHolder.appendChild(imgHolder);
+      }
+    }
+  };
+  request.send(null);
+</script>
+
+</html>

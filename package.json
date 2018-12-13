@@ -1,0 +1,30 @@
+{
+  "name": "progressive-test",
+  "version": "1.0.0",
+  "description": "different approaches for progressive images in web",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lexao85/progressive-test.git"
+  },
+  "keywords": [
+    "progressive",
+    "images",
+    "web"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lexao85/progressive-test/issues"
+  },
+  "homepage": "https://github.com/lexao85/progressive-test#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-fileupload": "^1.0.0",
+    "progressive-image": "^1.2.0",
+    "sharp": "^0.21.1"
+  }
+}
