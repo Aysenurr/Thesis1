@@ -31,10 +31,10 @@ node server.js
 ```
 
 ### Upload images
-To upload and delete images use form: http://localhost:8000/form  
+To upload and delete images use form: http://localhost:8080/form  
 
 ### View images
-To view images: http://localhost:8000/view_thumbnails and http://localhost:8000/view_progressive  
+To view images: http://localhost:8080/view_thumbnails and http://localhost:8080/view_progressive  
 
 ### Used packages
 - ```express``` to implement basical server  
