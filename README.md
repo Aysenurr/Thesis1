@@ -2,12 +2,6 @@
 
 Some approaches for progressive images. 
 
-## Demo
-Online demo: 
-https://progressive-images-test.herokuapp.com/form  
-https://progressive-images-test.herokuapp.com/view_thumbnails  
-https://progressive-images-test.herokuapp.com/view_progressive  
-
 ## Contents
 
 - [Installation](#installation)
