@@ -3,7 +3,7 @@ const fileUpload = require('express-fileupload');
 const sharp = require('sharp');
 const fs = require('fs');
 
-['uploads', 'progressive', 'thumbnails'].forEach((folderName) => {
+['uploads', 'thumbnails', 'cache'].forEach((folderName) => {
   const folderPath = `${__dirname}/${folderName}`;
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath);
@@ -20,7 +20,6 @@ app.use('/progressive-image', express.static(__dirname + '/node_modules/progress
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use('/thumbnails', express.static(__dirname + '/thumbnails'));
-app.use('/progressive', express.static(__dirname + '/progressive'));
 
 app.use('/css', express.static(__dirname + '/css'));
 
@@ -31,18 +30,48 @@ app.get('/ping', function (req, res) {
   res.send('pong');
 });
 
-app.get('/delete/:image_name', function (req, res) {
-  // res.send('image to delete' + req.params.image_name);
-  fs.unlinkSync(`${__dirname}/uploads/${req.params.image_name}`);
-  fs.unlinkSync(`${__dirname}/progressive/${req.params.image_name}.jpeg`);
-  fs.unlinkSync(`${__dirname}/thumbnails/${req.params.image_name}.jpeg`);
-  res.redirect("/form");
+app.get('/delete/:imageName', function (req, res) {
+  // res.send('image to delete' + req.params.imageName);
+  fs.unlinkSync(`${__dirname}/uploads/${req.params.imageName}`);
+  fs.unlinkSync(`${__dirname}/thumbnails/${req.params.imageName}.jpeg`);
+
+  fs.readdir(`${__dirname}/cache/`, (err, files) => {
+    files.forEach((file) => {
+      if (file.indexOf(`${req.params.imageName}_`) === 0) {
+        fs.unlinkSync(`${__dirname}/cache/${file}`);
+      }
+    })
+  });
+
+  res.redirect("/admin");
 });
 
-app.get('/image/:image_name', function (req, res) {
-  res.send(`get image: ${req.params.image_name}`);
-  console.log(req.query);
-  console.log(req.params);
+app.get('/image/:imageName', async function (req, res) {
+  const imagePath = __dirname + '/uploads/' + req.params.imageName;
+  const image = sharp(imagePath);
+  const askedImageWidth = parseFloat(req.query.imageWidth);
+  const cacheImagePath = `${__dirname}/cache/${req.params.imageName}_${askedImageWidth}.jpeg`;
+
+  image
+    .metadata()
+    .then((metadata) => {
+      if (askedImageWidth >= metadata.width) {
+        res.sendFile(imagePath);
+        return;
+      }
+      else if (fs.existsSync(cacheImagePath)) {
+        res.sendFile(cacheImagePath);
+        return;
+      }
+      return image
+        .resize(Math.min(metadata.width, askedImageWidth))
+        .jpeg()
+        .toFile(cacheImagePath)
+        .then(() => {
+          res.sendFile(cacheImagePath);
+          // res.end(data, 'binary');
+        });
+    });
 });
 
 app.get('/images', (req, res) => {
@@ -64,20 +93,14 @@ app.post('/upload', async function (req, res) {
     return;
   }
 
-  console.log('req.files >>>', req.files); // eslint-disable-line
-
   sampleFile = req.files.sampleFile;
 
-  await sharp(req.files.sampleFile.data)
+  const uploadedImage = sharp(req.files.sampleFile.data);
+  const metadata = await uploadedImage.metadata();
+  await uploadedImage
+    .resize(metadata.width * 0.2)
     .jpeg({
-      progressive: true,
-      quality: 100,
-    })
-    .toFile(__dirname + '/progressive/' + sampleFile.name + '.jpeg');
-
-  await sharp(req.files.sampleFile.data)
-    .jpeg({
-      quality: 5,
+      quality: 50,
     })
     .toFile(__dirname + '/thumbnails/' + sampleFile.name + '.jpeg');
 
@@ -89,7 +112,7 @@ app.post('/upload', async function (req, res) {
     }
 
     // res.send('File uploaded to ' + uploadPath);
-    res.redirect("/form");
+    res.redirect("/admin");
   });
 });
 

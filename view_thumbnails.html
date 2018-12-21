@@ -7,6 +7,7 @@
 
 <script>
   var imagesHolder = document.getElementById('app');
+  var screenWidth = screen.width;
 
   var request;
   if (window.XMLHttpRequest) { // Mozilla, Safari, ...
@@ -35,7 +36,7 @@
         var oImg = document.createElement("img");
         oImg.setAttribute('class', 'preview lazy');
         oImg.setAttribute('src', '/thumbnails/' + images[i] + '.jpeg');
-        oImg.setAttribute('data-src', '/uploads/' + images[i]);
+        oImg.setAttribute('data-src', '/image/' + images[i] + '?imageWidth=' + screenWidth);
         oImg.setAttribute('alt', images[i]);
         imgHolder.appendChild(oImg);
         imagesHolder.appendChild(imgHolder);

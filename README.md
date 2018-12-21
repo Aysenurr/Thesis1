@@ -15,8 +15,8 @@ Prerequirements: installed nodejs and npm (https://nodejs.org/en/)
 
 Clone repo: 
 ```sh
-git clone https://github.com/lexao85/progressive-test.git
-cd progressive-test
+git clone https://github.com/Aysenurr/Thesis1.git
+cd Thesis1
 ```
 
 Install the dependencies:
