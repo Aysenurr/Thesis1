@@ -31,7 +31,7 @@ node server.js
 ```
 
 ### Upload images
-To upload and delete images use form: http://localhost:8080/form  
+To upload and delete images use form: http://localhost:8080/admin 
 
 ### View images
 To view images: http://localhost:8080/view_thumbnails and http://localhost:8080/view_progressive  
